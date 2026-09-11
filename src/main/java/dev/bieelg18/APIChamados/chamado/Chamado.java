@@ -1,6 +1,6 @@
-package dev.bieelg18.APIChamados.Chamado;
+package dev.bieelg18.APIChamados.chamado;
 
-import dev.bieelg18.APIChamados.Usuario.Usuario;
+import dev.bieelg18.APIChamados.usuario.Usuario;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

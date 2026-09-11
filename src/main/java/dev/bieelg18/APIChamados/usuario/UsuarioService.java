@@ -1,6 +1,6 @@
-package dev.bieelg18.APIChamados.Usuario;
+package dev.bieelg18.APIChamados.usuario;
 
-import dev.bieelg18.APIChamados.Exception.RecursoNaoEncontradoException;
+import dev.bieelg18.APIChamados.exception.RecursoNaoEncontradoException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

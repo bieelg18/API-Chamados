@@ -1,4 +1,4 @@
-package dev.bieelg18.APIChamados.Chamado;
+package dev.bieelg18.APIChamados.chamado;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

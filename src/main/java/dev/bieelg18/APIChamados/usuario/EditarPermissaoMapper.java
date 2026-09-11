@@ -1,4 +1,4 @@
-package dev.bieelg18.APIChamados.Usuario;
+package dev.bieelg18.APIChamados.usuario;
 
 import org.mapstruct.Mapper;
 

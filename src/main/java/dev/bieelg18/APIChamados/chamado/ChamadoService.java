@@ -1,7 +1,7 @@
-package dev.bieelg18.APIChamados.Chamado;
+package dev.bieelg18.APIChamados.chamado;
 
-import dev.bieelg18.APIChamados.Exception.RecursoNaoEncontradoException;
-import dev.bieelg18.APIChamados.Exception.StatusIncorretoException;
+import dev.bieelg18.APIChamados.exception.RecursoNaoEncontradoException;
+import dev.bieelg18.APIChamados.exception.StatusIncorretoException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

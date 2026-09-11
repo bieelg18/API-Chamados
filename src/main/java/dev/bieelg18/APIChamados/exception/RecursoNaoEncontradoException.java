@@ -1,4 +1,4 @@
-package dev.bieelg18.APIChamados.Exception;
+package dev.bieelg18.APIChamados.exception;
 
 public class RecursoNaoEncontradoException extends RuntimeException {
     public RecursoNaoEncontradoException(String message) {

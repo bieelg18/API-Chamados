@@ -1,4 +1,4 @@
-package dev.bieelg18.APIChamados.Chamado;
+package dev.bieelg18.APIChamados.chamado;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
