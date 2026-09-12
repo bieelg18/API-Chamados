@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/usuario")
+@RequestMapping("/usuarios")
 @RequiredArgsConstructor
 public class UsuarioController {
 
@@ -37,7 +37,7 @@ public class UsuarioController {
         usuarioService.deletarUsuario(id);
     }
 
-    //Rota para atualizar dados de cadastro (Todos podem acessar, só precisa estar autenticado)
+    //Rota para atualizar dados de cadastro (Todos podem acessar, só precisa estar autenticado, da para alterar somente o proprio cadastro de quem chamou a requisição, não importe o nivel)
     @PatchMapping("/{id}")
     public ListarUsuarioDTO alterarDadosCadastro(@PathVariable Integer id, @RequestBody EditarUsuarioDTO editarDTO){
         return usuarioService.editarDadosCadastro(id, editarDTO);

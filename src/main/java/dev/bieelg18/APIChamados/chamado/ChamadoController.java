@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/chamado")
+@RequestMapping("/chamados")
 @RequiredArgsConstructor
 public class ChamadoController {
 
