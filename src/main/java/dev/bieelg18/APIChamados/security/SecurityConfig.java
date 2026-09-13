@@ -4,13 +4,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
 @Configuration
@@ -19,10 +23,18 @@ public class SecurityConfig {
 
     private final NaoAutenticadoHandler naoAutenticadoHandler;
     private final SemPermissaoHandler semPermissaoHandler;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration configuration
+    ) throws Exception{
+        return configuration.getAuthenticationManager();
     }
 
 
@@ -34,6 +46,9 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
 
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
                 .authenticationProvider(authenticationProvider)
 
                 .exceptionHandling(exception -> exception
@@ -42,8 +57,8 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(auth -> auth
-                        //Rota de cadastro, qualquer um pode acessar
-                        .requestMatchers(HttpMethod.POST, "/usuarios")
+                        //Rota de cadastro e login, qualquer um pode acessar
+                        .requestMatchers(HttpMethod.POST, "/usuarios", "/auth/login")
                         .permitAll()
 
                         //Usuário autenticado pode editar o próprio cadastro
@@ -70,7 +85,12 @@ public class SecurityConfig {
                         //Todo o restante fica restrito a nivel suporte
                         .requestMatchers("/chamados/**")
                         .hasRole("SUPORTE")
-                ) .httpBasic(Customizer.withDefaults());
+
+
+                ) .addFilterBefore(
+                        jwtAuthenticationFilter,
+                        UsernamePasswordAuthenticationFilter.class
+                );
         return http.build();
     }
 
