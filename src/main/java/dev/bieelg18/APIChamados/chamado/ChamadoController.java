@@ -1,6 +1,7 @@
 package dev.bieelg18.APIChamados.chamado;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,8 +16,8 @@ public class ChamadoController {
 
     //Rota para criar um chamado (Todos podem acessar, só precisa estar autenticado)
     @PostMapping
-    public ListarChamadosDTO criarChamado(@RequestBody CriarChamadoDTO criarDTO){
-        return chamadoService.criarChamado(criarDTO);
+    public ListarChamadosDTO criarChamado(@RequestBody CriarChamadoDTO criarDTO, Authentication authentication){
+        return chamadoService.criarChamado(criarDTO, authentication);
     }
 
     //Rota para listar todos os chamados (Precisa estar autenticado e ser nivel suporte)
@@ -25,10 +26,10 @@ public class ChamadoController {
         return chamadoService.listarChamados();
     }
 
-    //Rota para acessar os chamados de quem chamou a requisição (Todos podem acessar estando autenticado - Ainda precisa implementar a parte de saber quem chamou no método)
+    //Rota para acessar os chamados de quem chamou a requisição (Todos podem acessar estando autenticado)
     @GetMapping("/meusChamados")
-    public List<ListarChamadosDTO> chamadosUsuario(){
-        return chamadoService.listarChamadosUsuario();
+    public List<ListarChamadosDTO> chamadosUsuario(Authentication authentication){
+        return chamadoService.listarChamadosUsuario(authentication);
     }
 
     //Rota para listar chamados em aberto (Precisa estar autenticado e ser nivel suporte)

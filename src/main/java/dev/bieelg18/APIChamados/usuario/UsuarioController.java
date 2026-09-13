@@ -1,6 +1,7 @@
 package dev.bieelg18.APIChamados.usuario;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,9 +39,9 @@ public class UsuarioController {
     }
 
     //Rota para atualizar dados de cadastro (Todos podem acessar, só precisa estar autenticado, da para alterar somente o proprio cadastro de quem chamou a requisição, não importe o nivel)
-    @PatchMapping("/{id}")
-    public ListarUsuarioDTO alterarDadosCadastro(@PathVariable Integer id, @RequestBody EditarUsuarioDTO editarDTO){
-        return usuarioService.editarDadosCadastro(id, editarDTO);
+    @PatchMapping("/me")
+    public ListarUsuarioDTO alterarDadosCadastro(@RequestBody EditarUsuarioDTO editarDTO, Authentication authentication){
+        return usuarioService.editarDadosCadastro(editarDTO, authentication);
     }
 
     //Rota para alterar a permissao de um usuario ja cadastrado (Precisa estar autenticado e ser nivel suporte)
