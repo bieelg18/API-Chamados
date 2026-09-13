@@ -16,14 +16,6 @@ public class GlobalExceptionHandler {
                 .body(exception.getMessage());
     }
 
-    @ExceptionHandler(SemPermissaoException.class)
-    public ResponseEntity<String> tratarSemPermissao(
-            SemPermissaoException exception
-    ){
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(exception.getMessage());
-    }
-
     @ExceptionHandler(StatusIncorretoException.class)
     public ResponseEntity<String> tratarStatusIncorreto(
             StatusIncorretoException exception
