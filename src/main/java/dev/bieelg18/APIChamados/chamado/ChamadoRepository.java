@@ -8,4 +8,6 @@ public interface ChamadoRepository extends JpaRepository<Chamado, Integer> {
 
     List<Chamado> findByStatusChamado(StatusChamado statusChamado);
 
+    List<Chamado> findByUsuarioEmail(String Email);
+
 }
