@@ -2,7 +2,10 @@ package dev.bieelg18.APIChamados.chamado;
 
 import dev.bieelg18.APIChamados.exception.RecursoNaoEncontradoException;
 import dev.bieelg18.APIChamados.exception.StatusIncorretoException;
+import dev.bieelg18.APIChamados.usuario.Usuario;
+import dev.bieelg18.APIChamados.usuario.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,18 +18,25 @@ public class ChamadoService {
     private final ChamadoRepository chamadoRepository;
     private final CriarChamadoMapper criarChamadoMapper;
     private final ListarChamadosMapper listarChamadosMapper;
+    private final UsuarioRepository usuarioRepository;
 
     //Método para criar/abrir um novo chamado (todos os usuarios)
-    public ListarChamadosDTO criarChamado(CriarChamadoDTO criarDTO){
+    public ListarChamadosDTO criarChamado(CriarChamadoDTO criarDTO, Authentication authentication){
+
+        String email = authentication.getName();
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RecursoNaoEncontradoException(
+                        "Usuário autenticado não encontrado"
+                ));
         Chamado chamado = criarChamadoMapper.toEntity(criarDTO);
-        //Colocar aqui uma forma de pegar o id do usuario que esta abrindo o chamado
+        chamado.setUsuario(usuario);
         chamado.setDataAbertura(LocalDateTime.now());
         chamado.setStatusChamado(StatusChamado.ABERTO);
         Chamado chamadoCriado = chamadoRepository.save(chamado);
         return listarChamadosMapper.toDTO(chamadoCriado);
     }
 
-    //Método para listar todos os chamados (somente usuarios de nivel suporte)
+    //Método para listar todos os chamados
     public List<ListarChamadosDTO> listarChamados(){
         List<Chamado> chamados = chamadoRepository.findAll();
         return chamados.stream()
@@ -35,16 +45,17 @@ public class ChamadoService {
     }
 
 
-    //Método para listar todos os chamados que pertencem a quem chamou a requisição (todos os usuarios tem acesso)
-    public List<ListarChamadosDTO> listarChamadosUsuario(){
-        List<Chamado> chamados = chamadoRepository.findAll();
+    //Método para listar todos os chamados que pertencem a quem chamou a requisição
+    public List<ListarChamadosDTO> listarChamadosUsuario(Authentication authentication){
+        String email = authentication.getName();
+        List<Chamado> chamados = chamadoRepository.findByUsuarioEmail(email);
         return chamados.stream()
                 .map(listarChamadosMapper::toDTO)
                 .toList();
     }
 
 
-    //Método para listar todos os chamados em aberto (somente suporte)
+    //Método para listar todos os chamados em aberto
     public List<ListarChamadosDTO> chamadosEmAberto(){
         List<Chamado> chamados = chamadoRepository.findByStatusChamado(StatusChamado.ABERTO);
         return chamados.stream()
@@ -53,7 +64,7 @@ public class ChamadoService {
     }
 
 
-    //Método para listar todos os chamados encerrados (somente suporte)
+    //Método para listar todos os chamados encerrados
     public List<ListarChamadosDTO> chamadosEncerrados(){
         List<Chamado> chamados = chamadoRepository.findByStatusChamado(StatusChamado.FECHADO);
         return chamados.stream()
@@ -62,7 +73,7 @@ public class ChamadoService {
     }
 
 
-    //Método para listar todos os chamados em atendimento (somente suporte)
+    //Método para listar todos os chamados em atendimento
     public List<ListarChamadosDTO> chamadosEmAtendimento(){
         List<Chamado> chamados = chamadoRepository.findByStatusChamado(StatusChamado.EM_ATENDIMENTO);
         return chamados.stream()
@@ -71,7 +82,7 @@ public class ChamadoService {
     }
 
 
-    //Método para listar todos os chamados improcedentes (somente suporte)
+    //Método para listar todos os chamados improcedentes
     public List<ListarChamadosDTO> chamadosImprocedentes(){
         List<Chamado> chamados = chamadoRepository.findByStatusChamado(StatusChamado.IMPROCEDENTE);
         return chamados.stream()
@@ -80,7 +91,7 @@ public class ChamadoService {
     }
 
 
-    //Método para alterar chamado de aberto para em atendimento (somente suporte)
+    //Método para alterar chamado de aberto para em atendimento
     public ListarChamadosDTO emAtendimento(Integer numeroChamado) {
         Chamado chamado = chamadoRepository.findById(numeroChamado)
                 .orElseThrow(() -> new RecursoNaoEncontradoException(
@@ -97,7 +108,7 @@ public class ChamadoService {
     }
 
 
-    //Método para fechar um chamado (somente suporte)
+    //Método para fechar um chamado
     public ListarChamadosDTO fecharChamado(Integer numeroChamado){
         Chamado chamado = chamadoRepository.findById(numeroChamado)
                 .orElseThrow(() -> new RecursoNaoEncontradoException(
@@ -115,7 +126,7 @@ public class ChamadoService {
     }
 
 
-    //Método para fechar um chamado como improcedente (somente suporte)
+    //Método para fechar um chamado como improcedente
     public ListarChamadosDTO chamadoImprocedente(Integer numeroChamado){
         Chamado chamado = chamadoRepository.findById(numeroChamado)
                 .orElseThrow(() -> new RecursoNaoEncontradoException(
@@ -133,7 +144,7 @@ public class ChamadoService {
     }
 
 
-    //Método para deletar um chamado por id (somente suporte)
+    //Método para deletar um chamado por id
     public void deletarChamado(Integer numeroChamado){
         Chamado chamado = chamadoRepository.findById(numeroChamado)
                 .orElseThrow(() -> new RecursoNaoEncontradoException(

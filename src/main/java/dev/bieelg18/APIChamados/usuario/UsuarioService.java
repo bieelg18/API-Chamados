@@ -2,6 +2,8 @@ package dev.bieelg18.APIChamados.usuario;
 
 import dev.bieelg18.APIChamados.exception.RecursoNaoEncontradoException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,15 +17,17 @@ public class UsuarioService {
     private final EditarUsuarioMapper editarUsuarioMapper;
     private final EditarPermissaoMapper editarPermissaoMapper;
     private final ListarUsuarioMapper listarUsuarioMapper;
+    private final PasswordEncoder passwordEncoder;
 
     //Criar/Cadastrar usuários
     public ListarUsuarioDTO criarUsuario(CriarUsuarioDTO criarUsuarioDTO){
         Usuario usuario = criarUsuarioMapper.toEntity(criarUsuarioDTO);
+        usuario.setSenha(passwordEncoder.encode(criarUsuarioDTO.senha()));
         Usuario usuarioSalvo = usuarioRepository.save(usuario);
         return listarUsuarioMapper.toDTO(usuarioSalvo);
     }
 
-    //Listar todos os usuários (Implementar para que somente usuários com nivel Suporte possam acessar o método)
+    //Listar todos os usuários
     public List<ListarUsuarioDTO> listarUsuarios(){
         List<Usuario> usuarios = usuarioRepository.findAll();
         return usuarios.stream()
@@ -31,7 +35,7 @@ public class UsuarioService {
                 .toList();
     }
 
-    //Método para buscar usuários por e-mail (Implementar para que somente usuários com nivel Suporte possam acessar o método)
+    //Método para buscar usuários por e-mail
     public ListarUsuarioDTO buscarPorEmail(String email){
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(()-> new RecursoNaoEncontradoException(
@@ -40,7 +44,7 @@ public class UsuarioService {
         return listarUsuarioMapper.toDTO(usuario);
     }
 
-    //Método para deletar usuário por id (Implementar para que somente usuários com nivel Suporte possam acessar o método
+    //Método para deletar usuário por id
     public void deletarUsuario(Integer id){
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(()-> new RecursoNaoEncontradoException(
@@ -49,20 +53,23 @@ public class UsuarioService {
         usuarioRepository.delete(usuario);
     }
 
-    //Método para atualizar dados de cadastro do usuário que chamar a requisição (Todos podem acessar)
-    public ListarUsuarioDTO editarDadosCadastro(Integer id, EditarUsuarioDTO editarDTO){
-        Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new RecursoNaoEncontradoException(
-                        "Usuário com ID " + id + " não encontrado"
-                ));
+    //Método para atualizar dados de cadastro do usuário que chamar a requisição
+    public ListarUsuarioDTO editarDadosCadastro(EditarUsuarioDTO editarDTO, Authentication authentication){
+
+        String email = authentication.getName();
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                        .orElseThrow(() -> new RecursoNaoEncontradoException(
+                                "Usuário autenticado não encontrado"
+                        ));
+
         usuario.setNome(editarDTO.nome());
         usuario.setEmail(editarDTO.email());
-        usuario.setSenha(editarDTO.senha());
+        usuario.setSenha(passwordEncoder.encode(editarDTO.senha()));
         Usuario usuarioSalvo = usuarioRepository.save(usuario);
         return listarUsuarioMapper.toDTO(usuarioSalvo);
     }
 
-    //Método para alterar a permissão de um usuário (Somente usuários com nivel Suporte podem acessar)
+    //Método para alterar a permissão de um usuário
     public ListarUsuarioDTO editarPermissao(Integer id, EditarPermissaoDTO permissaoDTO){
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RecursoNaoEncontradoException(
