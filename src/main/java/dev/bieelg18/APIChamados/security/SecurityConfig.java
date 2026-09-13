@@ -61,6 +61,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/usuarios", "/auth/login")
                         .permitAll()
 
+                        //Rota da documentação, qualquer um pode acessar
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**")
+                        .permitAll()
+
                         //Usuário autenticado pode editar o próprio cadastro
                         .requestMatchers(HttpMethod.PATCH, "/usuarios/me")
                         .authenticated()
