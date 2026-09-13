@@ -62,9 +62,15 @@ public class UsuarioService {
                                 "Usuário autenticado não encontrado"
                         ));
 
-        usuario.setNome(editarDTO.nome());
-        usuario.setEmail(editarDTO.email());
-        usuario.setSenha(passwordEncoder.encode(editarDTO.senha()));
+        if (editarDTO.nome() != null){
+            usuario.setNome(editarDTO.nome());
+        }
+        if (editarDTO.email() != null) {
+            usuario.setEmail(editarDTO.email());
+        }
+        if (editarDTO.senha() != null){
+            usuario.setSenha(passwordEncoder.encode(editarDTO.senha()));
+        }
         Usuario usuarioSalvo = usuarioRepository.save(usuario);
         return listarUsuarioMapper.toDTO(usuarioSalvo);
     }
